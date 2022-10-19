@@ -47,7 +47,7 @@
 
 			<div>
 				Locking {!error ? ethers.utils.commify(amount) : 0} TOAD for {lockPeriod[0]}
-				{lockPeriod[0] > 1 ? 'weeks' : 'week'} - {((lockPeriod[0] - 1) ** 1.5 + 5).toFixed(2).replace(/[.,]00$/, '')}% extra jackpot odds
+				{lockPeriod[0] > 1 ? 'weeks' : 'week'} - {((lockPeriod[0] - 1) ** 1.5 + 5).toFixed(2)}% extra jackpot odds
 
 				<div class="px-6">
 					<Slider bind:value={lockPeriod} min={1} max={26} disabled={!$connected}>

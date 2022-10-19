@@ -68,7 +68,7 @@ const { unsubscribe } = walletsSubscription.subscribe(async (wallets) => {
 	if (walletProvider) {
 		const provider = new ethers.providers.Web3Provider(walletProvider, 'any');
 		await defaultEvmStores.setProvider(provider);
-		await defaultEvmStores.attachContract('TOAD', '0x24861414c8845b8115397302e9dcfaab3f239826', abi);
+		await defaultEvmStores.attachContract('TOAD', '0x46A7262a2198300fD8F75Fcc66040f05a034445D', abi);
 	}
 	updateAlreadyConnectedWallets();
 });

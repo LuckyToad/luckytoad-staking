@@ -58,7 +58,7 @@
 				</div>
 			</div>
 
-			<div class="flex gap-4">
+			<div class="flex gap-4 justify-center">
 				<button class="btn">Approve Lock</button>
 				<button class="btn">Lock Tokens</button>
 			</div>

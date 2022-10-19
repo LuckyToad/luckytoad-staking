@@ -1,0 +1,45 @@
+[
+	{
+		"type": "constructor",
+		"payable": false,
+		"inputs": [
+			{ "type": "string", "name": "symbol" },
+			{ "type": "string", "name": "name" }
+		]
+	},
+	{
+		"type": "function",
+		"name": "name",
+		"constant": true,
+		"payable": false,
+		"inputs": [],
+		"outputs": [{ "type": "string", "name": "" }]
+	},
+
+	{
+		"type": "function",
+		"name": "symbol",
+		"constant": true,
+		"payable": false,
+		"inputs": [],
+		"outputs": [{ "name": "", "type": "string" }]
+	},
+	{
+		"type": "function",
+		"name": "balanceOf",
+		"constant": true,
+		"stateMutability": "view",
+		"payable": false,
+		"inputs": [{ "type": "address", "name": "owner" }],
+		"outputs": [{ "type": "uint256" }]
+	},
+	{
+		"type": "function",
+		"name": "decimals",
+		"constant": true,
+		"stateMutability": "view",
+		"payable": false,
+		"inputs": [],
+		"outputs": [{ "type": "uint8" }]
+	}
+]

@@ -1,13 +1,15 @@
 <script>
 	import '../app.postcss';
 	import Navbar from '$lib/components/Navbar.svelte';
-	// import Footer from '$lib/components/Footer.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 </script>
 
-<div class="h-screen flex flex-col">
-	<Navbar />
-	<slot />
-	<!-- <Footer /> -->
+<div class="min-h-screen bg-brand-lemon-light font-Inter">
+	<div class="min-h-screen grid grid-rows-[auto_1fr_auto] grid-cols-1 w-full max-w-7xl mx-auto">
+		<Navbar />
+		<slot />
+		<Footer />
+	</div>
 </div>
 
 <style>

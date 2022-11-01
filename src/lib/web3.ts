@@ -7,6 +7,7 @@ import stakingabi from '$lib/stakingAbi.json';
 
 import { defaultEvmStores, connected, provider, chainId, chainData, signer, signerAddress, contracts } from 'svelte-ethers-store';
 import { get } from 'svelte/store';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 // // const INFURA_HTTPS_URL = import.meta.env.VITE_INFURA_HTTPS_URL;
 
 const injected = injectedModule();
@@ -117,7 +118,7 @@ export const getStakesForConnectedWallet = async () : Promise<Stake[]> => {
 	const holdersStakes = await stakingContract.queryHolderStakes(await sig.getAddress());
 	let stakes: Stake[] = [];
 	for(let i = 0; i < holdersStakes.amounts.length; i++) {
-		let stake: Stake = {amount: holdersStakes.amounts[i], unlockTime: holdersStakes.unlockTimes[i], multiplier: holdersStakes.stakeMultipliers[i], stakeid: holdersStakes.stakeIds[i], index: i};
+		let stake: Stake = {amount: formatUnits(holdersStakes.amounts[i], 9), unlockTime: holdersStakes.unlockTimes[i], multiplier: formatUnits(holdersStakes.stakeMultipliers[i], 5), stakeid: holdersStakes.stakeIds[i], index: i};
 		stakes.push(stake);
 	}
 	return stakes;

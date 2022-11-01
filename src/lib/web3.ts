@@ -1,11 +1,12 @@
 import Onboard from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
 import walletConnectModule from '@web3-onboard/walletconnect';
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 import abi from '$lib/abi.json';
+import stakingabi from '$lib/stakingAbi.json';
 
 import { defaultEvmStores, connected, provider, chainId, chainData, signer, signerAddress, contracts } from 'svelte-ethers-store';
-
+import { get } from 'svelte/store';
 // // const INFURA_HTTPS_URL = import.meta.env.VITE_INFURA_HTTPS_URL;
 
 const injected = injectedModule();
@@ -99,3 +100,56 @@ const updateAlreadyConnectedWallets = async () => {
 	const connectedWalletsLabels = onboard.state.get().wallets.map(({ label }) => label);
 	window.sessionStorage.setItem('ConnectedWallets', JSON.stringify(connectedWalletsLabels));
 };
+
+interface Stake {
+	amount: string,
+	unlockTime: number,
+	multiplier: string,
+	stakeid: number,
+	index: number
+}
+
+export const getStakesForConnectedWallet = async () : Promise<Stake[]> => {
+	const sig = get(signer);
+	// Connect to the staking contract
+	const stakingContract: ethers.Contract = new ethers.Contract('', stakingabi, sig);
+	// Get the stakes for this wallet
+	const holdersStakes = await stakingContract.queryHolderStakes(await sig.getAddress());
+	let stakes: Stake[] = [];
+	for(let i = 0; i < holdersStakes.amounts.length; i++) {
+		let stake: Stake = {amount: holdersStakes.amounts[i], unlockTime: holdersStakes.unlockTimes[i], multiplier: holdersStakes.stakeMultipliers[i], stakeid: holdersStakes.stakeIds[i], index: i};
+		stakes.push(stake);
+	}
+	return stakes;
+}
+
+export const approveTokensOnConnectedWallet = async (amount: BigNumber) : Promise<void> => {
+	const sig = get(signer);
+	const tokenContract = new ethers.Contract('', abi, sig);
+	const response = await tokenContract.approve('', amount);
+	const reply = await response.wait();
+}
+
+export const stakeTokensOnConnectedWallet = async (amount: BigNumber, weeks: number) : Promise<void> => {
+	const sig = get(signer);
+	const stakingContract: ethers.Contract = new ethers.Contract('', stakingabi, sig);
+	// Send the new stake info
+	const response = await stakingContract.stakeTokens(amount, weeks);
+	const reply = await response.wait();
+}
+
+export const unstakeTokensOnConnectedWallet = async (stakeId: number, index: number) : Promise<void> => {
+	const sig = get(signer);
+	const stakingContract: ethers.Contract = new ethers.Contract('', stakingabi, sig);
+	// Send the unstake details and wait for a response
+	const response = await stakingContract.unstakeTokens(stakeId, index);
+	const reply = await response.wait();
+}
+
+export const transferStakeFromConnectedWallet = async (addressTo: string, stakeId: number, index: number) : Promise<void> => {
+	const sig = get(signer);
+	const stakingContract: ethers.Contract = new ethers.Contract('', stakingabi, sig);
+	// Send the txn
+	const response = await stakingContract.transferStakeOwnership(stakeId, index, addressTo);
+	const reply = await response.wait();
+}

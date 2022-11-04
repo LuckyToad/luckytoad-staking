@@ -3,7 +3,7 @@
 	import { Menu, MenuButton, MenuItems, MenuItem, Transition } from '@rgossiaux/svelte-headlessui';
 	import { connected, signerAddress } from 'svelte-ethers-store';
 	import { connect, disconnect } from '$lib/web3';
-	import CurrentLocks from './CurrentLocks.svelte';
+	import CurrentStakes from './CurrentStakes.svelte';
 </script>
 
 {#if !$connected}
@@ -39,7 +39,7 @@
 					</button>
 				</MenuItem>
 				<MenuItem let:active>
-					<CurrentLocks />
+					<CurrentStakes />
 				</MenuItem>
 			</MenuItems>
 		</Transition>

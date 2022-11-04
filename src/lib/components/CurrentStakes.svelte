@@ -1,8 +1,7 @@
 <script>
 	import 'iconify-icon';
 	import { Menu, MenuButton, MenuItems, MenuItem, Transition } from '@rgossiaux/svelte-headlessui';
-	import { getStakesForConnectedWallet } from '$lib/web3';
-	import moment from 'moment';
+	import { stakes } from '$lib/stores/currentStakes';
 </script>
 
 <Menu class={'relative'}>
@@ -20,17 +19,15 @@
 						<th> Amount </th>
 						<th> Unlock Date </th>
 					</thead>
-					{#await getStakesForConnectedWallet()}
-						<p>getting fata...</p>
-					{:then stakes}
-						{#each stakes as { amount, multiplier, unlockTime }}
+					{#if $stakes}
+						{#each $stakes as { amount, multiplier, unlockTime }}
 							<tr>
 								<td>{multiplier}</td>
 								<td>{amount}</td>
-								<td>{moment.unix(unlockTime).format('DD/MM/YYYY')}</td>
+								<td>{unlockTime}</td>
 							</tr>
 						{/each}
-					{/await}
+					{/if}
 				</table>
 			</MenuItem>
 		</MenuItems>

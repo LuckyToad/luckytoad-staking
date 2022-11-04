@@ -4,6 +4,7 @@
 	import { connected, contracts } from 'svelte-ethers-store';
 	import { balance } from '$lib/stores/balance';
 	import { connectionError } from '$lib/stores/connectionError';
+	import { approveTokensOnConnectedWallet, stakeTokensOnConnectedWallet } from '$lib/web3';
 
 	let amount = 0;
 	let lockPeriod = [1, 26];
@@ -58,8 +59,8 @@
 		</div>
 
 		<div class="flex gap-4 justify-center">
-			<button class="btn">Approve Lock</button>
-			<button class="btn">Lock Tokens</button>
+			<button class="btn" on:click={() => approveTokensOnConnectedWallet(amount)}>Approve Lock</button>
+			<button class="btn" on:click={() => stakeTokensOnConnectedWallet(amount, lockPeriod[0])}>Lock Tokens</button>
 		</div>
 	</div>
 </main>

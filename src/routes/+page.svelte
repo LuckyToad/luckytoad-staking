@@ -6,11 +6,11 @@
 	import { connectionError } from '$lib/stores/connectionError';
 </script>
 
-{#if $connectionError}
-	<p class="text-lg font-Inter font-bold text-red-700 text-center bg-brand-lemon-light">PLEASE CONNECT YOUR WALLET TO CONTINUE</p>
-{/if}
+<main class="flex flex-col justify-center items-center p-8 gap-14">
+	{#if $connectionError}
+		<p class="text-lg font-Inter font-bold text-red-700 text-center bg-brand-lemon-light">PLEASE CONNECT YOUR WALLET TO CONTINUE</p>
+	{/if}
 
-<main class="flex justify-center items-center p-8">
 	<div class="flex flex-col gap-4 max-w-lg w-full">
 		<StakeAmountInput />
 		<StakeStats />

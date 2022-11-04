@@ -17,9 +17,7 @@
 
 	$: if ($connected) {
 		setInterval(async () => {
-			console.log('status:', !!(await checkApprovalOnConnectedWallet($amount)));
-
-			console.log(await checkApprovalOnConnectedWallet($amount));
+			console.log(!!(await checkApprovalOnConnectedWallet($amount)));
 
 			if (await checkApprovalOnConnectedWallet($amount)) lockApproved = true;
 		}, 1000);

@@ -8,7 +8,9 @@ import stakingabi from '$lib/stakingAbi.json';
 import { defaultEvmStores, connected, provider, chainId, chainData, signer, signerAddress, contracts } from 'svelte-ethers-store';
 import { get } from 'svelte/store';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-// // const INFURA_HTTPS_URL = import.meta.env.VITE_INFURA_HTTPS_URL;
+
+const INFURA_HTTPS_URL = import.meta.env.VITE_INFURA_HTTPS_URL;
+const INFURA_GOERLI_URL = import.meta.env.VITE_INFURA_GOERLI_URL;
 
 const injected = injectedModule();
 const walletConnect = walletConnectModule();
@@ -20,7 +22,13 @@ let onboard = Onboard({
 			id: '0x1',
 			token: 'ETH',
 			label: 'Ethereum Mainnet',
-			rpcUrl: 'https://mainnet.infura.io/v3/79feb803928a4e14a5124eeee64d81ff'
+			rpcUrl: INFURA_HTTPS_URL
+		},
+		{
+			id: '0x5',
+			token: 'goETH',
+			label: 'Ethereum Goerli',
+			rpcUrl: INFURA_GOERLI_URL
 		}
 	],
 	appMetadata: {
@@ -70,7 +78,7 @@ const { unsubscribe } = walletsSubscription.subscribe(async (wallets) => {
 	if (walletProvider) {
 		const provider = new ethers.providers.Web3Provider(walletProvider, 'any');
 		await defaultEvmStores.setProvider(provider);
-		await defaultEvmStores.attachContract('TOAD', '0x46A7262a2198300fD8F75Fcc66040f05a034445D', abi);
+		await defaultEvmStores.attachContract('TOAD', '0xBfB2b6870501a6Ff17121D676A0A45a38c9eeD1e', abi);
 	}
 	updateAlreadyConnectedWallets();
 });
@@ -103,62 +111,73 @@ const updateAlreadyConnectedWallets = async () => {
 };
 
 interface Stake {
-	amount: string,
-	unlockTime: number,
-	multiplier: string,
-	stakeid: number,
-	index: number
+	amount: string;
+	unlockTime: number;
+	multiplier: string;
+	stakeid: number;
+	index: number;
 }
 
-export const getStakesForConnectedWallet = async () : Promise<Stake[]> => {
+export const getStakesForConnectedWallet = async (): Promise<Stake[]> => {
 	const sig = get(signer);
 	// Connect to the staking contract
 	const stakingContract: ethers.Contract = new ethers.Contract('0x23305ae66432644427fe97C7469E9F06e7D84041', stakingabi, sig);
 	// Get the stakes for this wallet
 	const holdersStakes = await stakingContract.queryHolderStakes(await sig.getAddress());
 	let stakes: Stake[] = [];
-	for(let i = 0; i < holdersStakes.amounts.length; i++) {
-		let stake: Stake = {amount: formatUnits(holdersStakes.amounts[i], 9), unlockTime: holdersStakes.unlockTimes[i], multiplier: formatUnits(holdersStakes.stakeMultipliers[i], 5), stakeid: holdersStakes.stakeIds[i], index: i};
+	for (let i = 0; i < holdersStakes.amounts.length; i++) {
+		let stake: Stake = { amount: formatUnits(holdersStakes.amounts[i], 9), unlockTime: holdersStakes.unlockTimes[i], multiplier: formatUnits(holdersStakes.stakeMultipliers[i], 5), stakeid: holdersStakes.stakeIds[i], index: i };
 		stakes.push(stake);
 	}
 	return stakes;
-}
+};
 
-export const approveTokensOnConnectedWallet = async (amount: BigNumber) : Promise<void> => {
+export const approveTokensOnConnectedWallet = async (amount: number): Promise<void> => {
+	const bigNumberAmount = ethers.BigNumber.from(amount);
+
 	const sig = get(signer);
 	const tokenContract = new ethers.Contract('0xBfB2b6870501a6Ff17121D676A0A45a38c9eeD1e', abi, sig);
-	const response = await tokenContract.approve('0x23305ae66432644427fe97C7469E9F06e7D84041', amount);
+	const response = await tokenContract.approve('0x23305ae66432644427fe97C7469E9F06e7D84041', bigNumberAmount);
 	const reply = await response.wait();
-}
+};
 
-export const stakeTokensOnConnectedWallet = async (amount: BigNumber, weeks: number) : Promise<void> => {
+export const stakeTokensOnConnectedWallet = async (amount: BigNumber, weeks: number): Promise<void> => {
 	const sig = get(signer);
 	const stakingContract: ethers.Contract = new ethers.Contract('0x23305ae66432644427fe97C7469E9F06e7D84041', stakingabi, sig);
 	// Send the new stake info
 	const response = await stakingContract.stakeTokens(amount, weeks);
 	const reply = await response.wait();
-}
+};
 
-export const unstakeTokensOnConnectedWallet = async (stakeId: number, index: number) : Promise<void> => {
+export const unstakeTokensOnConnectedWallet = async (stakeId: number, index: number): Promise<void> => {
 	const sig = get(signer);
 	const stakingContract: ethers.Contract = new ethers.Contract('0x23305ae66432644427fe97C7469E9F06e7D84041', stakingabi, sig);
 	// Send the unstake details and wait for a response
 	const response = await stakingContract.unstakeTokens(stakeId, index);
 	const reply = await response.wait();
-}
+};
 
-export const transferStakeFromConnectedWallet = async (addressTo: string, stakeId: number, index: number) : Promise<void> => {
+export const transferStakeFromConnectedWallet = async (addressTo: string, stakeId: number, index: number): Promise<void> => {
 	const sig = get(signer);
 	const stakingContract: ethers.Contract = new ethers.Contract('0x23305ae66432644427fe97C7469E9F06e7D84041', stakingabi, sig);
 	// Send the txn
 	const response = await stakingContract.transferStakeOwnership(stakeId, index, addressTo);
 	const reply = await response.wait();
-}
+};
 
-export const checkApprovalOnConnectedWallet = async (amt: BigNumber) : Promise<boolean> => {
+export const checkApprovalOnConnectedWallet = async (amount: number): Promise<boolean> => {
+	const bigNumberAmount = ethers.BigNumber.from(amount);
+
 	const sig = get(signer);
 	const tokenContract = new ethers.Contract('0xBfB2b6870501a6Ff17121D676A0A45a38c9eeD1e', abi, sig);
+<<<<<<< HEAD
 	const resp: BigNumber = await tokenContract.allowance(await sig.getAddress(), '0x23305ae66432644427fe97C7469E9F06e7D84041');
 
 	return (resp.gte(amt));
 }
+=======
+	const resp = await tokenContract.allowance(await sig.getAddress(), '0x23305ae66432644427fe97C7469E9F06e7D84041');
+	const amtAllowed: BigNumber = resp[0];
+	return amtAllowed.gte(bigNumberAmount);
+};
+>>>>>>> fef5c40099fe36ecd1869410992474fbf12aa060

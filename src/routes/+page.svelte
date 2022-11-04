@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Slider from '@bulatdashiev/svelte-slider';
 	import { ethers } from 'ethers';
-	import { connected, contracts } from 'svelte-ethers-store';
+	import { connected, contracts, signer } from 'svelte-ethers-store';
 	import { balance } from '$lib/stores/balance';
 	import { connectionError } from '$lib/stores/connectionError';
-	import { approveTokensOnConnectedWallet, stakeTokensOnConnectedWallet } from '$lib/web3';
+	import { approveTokensOnConnectedWallet, stakeTokensOnConnectedWallet, checkApprovalOnConnectedWallet } from '$lib/web3';
 
 	let amount = 0;
 	let lockPeriod = [1, 26];
@@ -24,6 +24,12 @@
 		amount = Number(e.target.value);
 
 		isAmountValid();
+	}
+
+	$: if ($connected) {
+		setInterval(async () => {
+			await checkApprovalOnConnectedWallet(amount);
+		}, 10000);
 	}
 </script>
 

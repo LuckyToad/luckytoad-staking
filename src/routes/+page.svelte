@@ -4,7 +4,7 @@
 	import { connected, contracts, signer } from 'svelte-ethers-store';
 	import { balance } from '$lib/stores/balance';
 	import { connectionError } from '$lib/stores/connectionError';
-	import { approveTokensOnConnectedWallet, stakeTokensOnConnectedWallet, checkApprovalOnConnectedWallet } from '$lib/web3';
+	import { approveTokensOnConnectedWallet, stakeTokensOnConnectedWallet, checkApprovalOnConnectedWallet, getStakesForConnectedWallet } from '$lib/web3';
 
 	let amount = 0;
 	let lockPeriod = [1, 26];
@@ -26,10 +26,13 @@
 		isAmountValid();
 	}
 
+	let lockApproved = false;
+	let stakes = [];
+
 	$: if ($connected) {
 		setInterval(async () => {
-			await checkApprovalOnConnectedWallet(amount);
-		}, 10000);
+			if (await checkApprovalOnConnectedWallet(amount)) lockApproved = true;
+		}, 500);
 	}
 </script>
 
@@ -66,7 +69,7 @@
 
 		<div class="flex gap-4 justify-center">
 			<button class="btn" on:click={() => approveTokensOnConnectedWallet(amount)}>Approve Lock</button>
-			<button class="btn" on:click={() => stakeTokensOnConnectedWallet(amount, lockPeriod[0])}>Lock Tokens</button>
+			<button class="btn disabled:bg-blue-500 disabled:cursor-not-allowed" on:click={() => stakeTokensOnConnectedWallet(amount, lockPeriod[0])} disabled={!lockApproved}>Lock Tokens</button>
 		</div>
 	</div>
 </main>

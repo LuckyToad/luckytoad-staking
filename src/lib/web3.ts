@@ -123,12 +123,14 @@ export const getStakesForConnectedWallet = async (): Promise<Stake[]> => {
 	// Connect to the staking contract
 	const stakingContract: ethers.Contract = new ethers.Contract('0x23305ae66432644427fe97C7469E9F06e7D84041', stakingabi, sig);
 	// Get the stakes for this wallet
-	const holdersStakes = await stakingContract.queryHolderStakes(await sig.getAddress());
+	const holdersStakes = await stakingContract.queryHoldersStakes(await sig.getAddress());
 	let stakes: Stake[] = [];
+
 	for (let i = 0; i < holdersStakes.amounts.length; i++) {
 		let stake: Stake = { amount: formatUnits(holdersStakes.amounts[i], 9), unlockTime: holdersStakes.unlockTimes[i], multiplier: formatUnits(holdersStakes.stakeMultipliers[i], 5), stakeid: holdersStakes.stakeIds[i], index: i };
 		stakes.push(stake);
 	}
+
 	return stakes;
 };
 
@@ -141,11 +143,13 @@ export const approveTokensOnConnectedWallet = async (amount: number): Promise<vo
 	const reply = await response.wait();
 };
 
-export const stakeTokensOnConnectedWallet = async (amount: BigNumber, weeks: number): Promise<void> => {
+export const stakeTokensOnConnectedWallet = async (amount: number, weeks: number): Promise<void> => {
+	const bigNumberAmount = ethers.BigNumber.from(amount);
+
 	const sig = get(signer);
 	const stakingContract: ethers.Contract = new ethers.Contract('0x23305ae66432644427fe97C7469E9F06e7D84041', stakingabi, sig);
 	// Send the new stake info
-	const response = await stakingContract.stakeTokens(amount, weeks);
+	const response = await stakingContract.stakeTokens(bigNumberAmount, weeks);
 	const reply = await response.wait();
 };
 

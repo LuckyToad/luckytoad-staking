@@ -135,7 +135,7 @@ export const getStakesForConnectedWallet = async (): Promise<Stake[]> => {
 };
 
 export const approveTokensOnConnectedWallet = async (amount: number): Promise<void> => {
-	const bigNumberAmount = ethers.BigNumber.from(amount);
+	const bigNumberAmount = parseUnits(ethers.BigNumber.from(amount).toString(), 9);
 
 	const sig = get(signer);
 	const tokenContract = new ethers.Contract('0xBfB2b6870501a6Ff17121D676A0A45a38c9eeD1e', abi, sig);
@@ -144,7 +144,7 @@ export const approveTokensOnConnectedWallet = async (amount: number): Promise<vo
 };
 
 export const stakeTokensOnConnectedWallet = async (amount: number, weeks: number): Promise<void> => {
-	const bigNumberAmount = ethers.BigNumber.from(amount);
+	const bigNumberAmount = parseUnits(ethers.BigNumber.from(amount).toString(), 9);
 
 	const sig = get(signer);
 	const stakingContract: ethers.Contract = new ethers.Contract('0x23305ae66432644427fe97C7469E9F06e7D84041', stakingabi, sig);
@@ -170,7 +170,7 @@ export const transferStakeFromConnectedWallet = async (addressTo: string, stakeI
 };
 
 export const checkApprovalOnConnectedWallet = async (amount: number): Promise<boolean> => {
-	const bigNumberAmount = ethers.BigNumber.from(amount);
+	const bigNumberAmount = parseUnits(ethers.BigNumber.from(amount).toString(), 9);
 
 	const sig = get(signer);
 	const tokenContract = new ethers.Contract('0xBfB2b6870501a6Ff17121D676A0A45a38c9eeD1e', abi, sig);

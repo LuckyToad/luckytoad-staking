@@ -158,7 +158,7 @@ export const transferStakeFromConnectedWallet = async (addressTo: string, stakeI
 export const checkApprovalOnConnectedWallet = async (amt: BigNumber) : Promise<boolean> => {
 	const sig = get(signer);
 	const tokenContract = new ethers.Contract('0xBfB2b6870501a6Ff17121D676A0A45a38c9eeD1e', abi, sig);
-	const resp = await tokenContract.allowance(await sig.getAddress(), '0x23305ae66432644427fe97C7469E9F06e7D84041');
-	let amtAllowed: BigNumber = resp[0];
-	return (amtAllowed.gte(amt));
+	const resp: BigNumber = await tokenContract.allowance(await sig.getAddress(), '0x23305ae66432644427fe97C7469E9F06e7D84041');
+
+	return (resp.gte(amt));
 }

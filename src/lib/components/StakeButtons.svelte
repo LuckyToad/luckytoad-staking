@@ -5,6 +5,10 @@
 	import { lockPeriod } from '$lib/stores/StakeLockPeriod';
 
 	let lockApproved = false;
+	let approveUnlocked = false;
+	let lockUnlocked = false;
+
+	
 
 	const handleApprove = () => {
 		if (!$amount) return;
@@ -17,14 +21,31 @@
 
 	$: if ($connected) {
 		setInterval(async () => {
-			console.log(!!(await checkApprovalOnConnectedWallet($amount)));
+			// Unlock the approval button only if there's an amount 
+			
 
-			if (await checkApprovalOnConnectedWallet($amount)) lockApproved = true;
+			if(!$amount) {
+				approveUnlocked = false;
+				lockUnlocked = false;
+				return;
+			}
+			approveUnlocked = !lockApproved;
+			lockUnlocked = lockApproved;
+
+			let approval = await checkApprovalOnConnectedWallet($amount);
+			console.log("Is approved?", approval);
+			lockApproved = approval;
+			
+
+			
+
+
+			
 		}, 1000);
 	}
 </script>
 
 <div class="flex gap-4 justify-center">
-	<button on:click={handleApprove} disabled={!$amount} class="btn disabled:bg-brand-lemon-dark disabled:text-gray-400 disabled:cursor-not-allowed">Approve Lock</button>
-	<button on:click={handleStake} disabled={!lockApproved} class="btn disabled:bg-brand-lemon-dark disabled:text-gray-400 disabled:cursor-not-allowed">Lock Tokens</button>
+	<button on:click={handleApprove} disabled={!approveUnlocked} class="btn disabled:bg-brand-lemon-dark disabled:text-gray-400 disabled:cursor-not-allowed">Approve Lock</button>
+	<button on:click={handleStake} disabled={!lockUnlocked} class="btn disabled:bg-brand-lemon-dark disabled:text-gray-400 disabled:cursor-not-allowed">Lock Tokens</button>
 </div>

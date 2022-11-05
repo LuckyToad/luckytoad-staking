@@ -8,15 +8,28 @@
 	let approveUnlocked = false;
 	let lockUnlocked = false;
 
+	let approveInProgress = false;
+	let lockInProgress = false;
+
 	
 
-	const handleApprove = () => {
+	const handleApprove = async () => {
 		if (!$amount) return;
-		approveTokensOnConnectedWallet($amount);
+		if(approveInProgress) {
+			return;
+		}
+		approveInProgress = true;
+		await approveTokensOnConnectedWallet($amount);
+		approveInProgress = false;
 	};
-	const handleStake = () => {
+	const handleStake = async () => {
 		if (!lockApproved) return;
-		stakeTokensOnConnectedWallet($amount, $lockPeriod[0]);
+		if(lockInProgress) {
+			return;
+		}
+		approveInProgress = true;
+		await stakeTokensOnConnectedWallet($amount, $lockPeriod[0]);
+		lockInProgress = false;
 	};
 
 	$: if ($connected) {

@@ -11,22 +11,16 @@
 	let approveInProgress = false;
 	let lockInProgress = false;
 
-	
-
 	const handleApprove = async () => {
-		if (!$amount) return;
-		if(approveInProgress) {
-			return;
-		}
+		if (!$amount || approveInProgress) return;
+
 		approveInProgress = true;
 		await approveTokensOnConnectedWallet($amount);
 		approveInProgress = false;
 	};
 	const handleStake = async () => {
-		if (!lockApproved) return;
-		if(lockInProgress) {
-			return;
-		}
+		if (!lockApproved || lockInProgress) return;
+
 		approveInProgress = true;
 		await stakeTokensOnConnectedWallet($amount, $lockPeriod[0]);
 		lockInProgress = false;
@@ -34,10 +28,8 @@
 
 	$: if ($connected) {
 		setInterval(async () => {
-			// Unlock the approval button only if there's an amount 
-			
-
-			if(!$amount) {
+			// Unlock the approval button only if there's an amount
+			if (!$amount) {
 				approveUnlocked = false;
 				lockUnlocked = false;
 				return;
@@ -46,14 +38,7 @@
 			lockUnlocked = lockApproved;
 
 			let approval = await checkApprovalOnConnectedWallet($amount);
-			console.log("Is approved?", approval);
 			lockApproved = approval;
-			
-
-			
-
-
-			
 		}, 1000);
 	}
 </script>

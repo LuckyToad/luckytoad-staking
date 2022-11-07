@@ -5,14 +5,16 @@ import { ethers, BigNumber } from 'ethers';
 import abi from '$lib/abi.json';
 import stakingabi from '$lib/stakingAbi.json';
 
-import { defaultEvmStores, connected, provider, chainId, chainData, signer, signerAddress, contracts } from 'svelte-ethers-store';
+import { defaultEvmStores, signer } from 'svelte-ethers-store';
 import { get } from 'svelte/store';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import moment from 'moment';
 
 const INFURA_HTTPS_URL = import.meta.env.VITE_INFURA_HTTPS_URL;
 const INFURA_GOERLI_URL = import.meta.env.VITE_INFURA_GOERLI_URL;
-const stake_addr = "0x8dDB0c93B774cDB45d8AEBC60621d32EBB070108";
+const TOAD_CONTRACT_ADDRESS = import.meta.env.VITE_TOAD_CONTRACT_ADDRESS;
+const STAKING_ADDRESS = import.meta.env.VITE_STAKING_ADDRESS;
+
 const injected = injectedModule();
 const walletConnect = walletConnectModule();
 
@@ -79,7 +81,7 @@ const { unsubscribe } = walletsSubscription.subscribe(async (wallets) => {
 	if (walletProvider) {
 		const provider = new ethers.providers.Web3Provider(walletProvider, 'any');
 		await defaultEvmStores.setProvider(provider);
-		await defaultEvmStores.attachContract('TOAD', '0xBfB2b6870501a6Ff17121D676A0A45a38c9eeD1e', abi);
+		await defaultEvmStores.attachContract('TOAD', TOAD_CONTRACT_ADDRESS, abi);
 	}
 	updateAlreadyConnectedWallets();
 });
@@ -122,7 +124,7 @@ interface Stake {
 export const getStakesForConnectedWallet = async (): Promise<Stake[]> => {
 	const sig = get(signer);
 	// Connect to the staking contract
-	const stakingContract: ethers.Contract = new ethers.Contract(stake_addr, stakingabi, sig);
+	const stakingContract: ethers.Contract = new ethers.Contract(STAKING_ADDRESS, stakingabi, sig);
 	// Get the stakes for this wallet
 	const holdersStakes = await stakingContract.queryHoldersStakes(await sig.getAddress());
 	const stakes: Stake[] = [];
@@ -139,8 +141,8 @@ export const approveTokensOnConnectedWallet = async (amount: number): Promise<vo
 	const bigNumberAmount = parseUnits(ethers.BigNumber.from(amount).toString(), 9);
 
 	const sig = get(signer);
-	const tokenContract = new ethers.Contract('0xBfB2b6870501a6Ff17121D676A0A45a38c9eeD1e', abi, sig);
-	const response = await tokenContract.approve(stake_addr, bigNumberAmount);
+	const tokenContract = new ethers.Contract(TOAD_CONTRACT_ADDRESS, abi, sig);
+	const response = await tokenContract.approve(STAKING_ADDRESS, bigNumberAmount);
 	const reply = await response.wait();
 };
 
@@ -148,8 +150,8 @@ export const checkApprovalOnConnectedWallet = async (amount: number): Promise<bo
 	const bigNumberAmount = parseUnits(ethers.BigNumber.from(amount).toString(), 9);
 
 	const sig = get(signer);
-	const tokenContract = new ethers.Contract('0xBfB2b6870501a6Ff17121D676A0A45a38c9eeD1e', abi, sig);
-	const resp = await tokenContract.allowance(await sig.getAddress(), stake_addr);
+	const tokenContract = new ethers.Contract(TOAD_CONTRACT_ADDRESS, abi, sig);
+	const resp = await tokenContract.allowance(await sig.getAddress(), STAKING_ADDRESS);
 	const amtAllowed: BigNumber = resp;
 	return amtAllowed.gte(bigNumberAmount);
 };
@@ -158,7 +160,7 @@ export const stakeTokensOnConnectedWallet = async (amount: number, weeks: number
 	const bigNumberAmount = parseUnits(ethers.BigNumber.from(amount).toString(), 9);
 
 	const sig = get(signer);
-	const stakingContract: ethers.Contract = new ethers.Contract(stake_addr, stakingabi, sig);
+	const stakingContract: ethers.Contract = new ethers.Contract(STAKING_ADDRESS, stakingabi, sig);
 	// Send the new stake info
 	const response = await stakingContract.stakeTokens(bigNumberAmount, weeks);
 	const reply = await response.wait();
@@ -166,7 +168,7 @@ export const stakeTokensOnConnectedWallet = async (amount: number, weeks: number
 
 export const unstakeTokensOnConnectedWallet = async (stakeId: number, index: number): Promise<void> => {
 	const sig = get(signer);
-	const stakingContract: ethers.Contract = new ethers.Contract(stake_addr, stakingabi, sig);
+	const stakingContract: ethers.Contract = new ethers.Contract(STAKING_ADDRESS, stakingabi, sig);
 	// Send the unstake details and wait for a response
 	const response = await stakingContract.unstakeTokens(stakeId, index);
 	const reply = await response.wait();
@@ -174,7 +176,7 @@ export const unstakeTokensOnConnectedWallet = async (stakeId: number, index: num
 
 export const transferStakeFromConnectedWallet = async (addressTo: string, stakeId: number, index: number): Promise<void> => {
 	const sig = get(signer);
-	const stakingContract: ethers.Contract = new ethers.Contract(stake_addr, stakingabi, sig);
+	const stakingContract: ethers.Contract = new ethers.Contract(STAKING_ADDRESS, stakingabi, sig);
 	// Send the txn
 	const response = await stakingContract.transferStakeOwnership(stakeId, index, addressTo);
 	const reply = await response.wait();

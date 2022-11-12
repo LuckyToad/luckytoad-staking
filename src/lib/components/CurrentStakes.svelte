@@ -2,6 +2,8 @@
 	import 'iconify-icon';
 	import { Menu, MenuButton, MenuItems, MenuItem, Transition } from '@rgossiaux/svelte-headlessui';
 	import { stakes } from '$lib/stores/currentStakes';
+	import moment from 'moment';
+	import { unstakeTokensOnConnectedWallet } from '$lib/web3';
 </script>
 
 <Menu class={'relative'}>
@@ -20,11 +22,17 @@
 						<th> Unlock Date </th>
 					</thead>
 					{#if $stakes}
-						{#each $stakes as { amount, multiplier, unlockTime }}
+						{#each $stakes as { amount, multiplier, unlockTime, stakeid, index }}
 							<tr>
 								<td>{multiplier}</td>
 								<td>{amount}</td>
-								<td>{unlockTime}</td>
+								{#if moment(Date.now()).format('MMM Do, YY') !== unlockTime}
+									<td>{unlockTime}</td>
+								{:else}
+									<td>
+										<button on:click={() => unstakeTokensOnConnectedWallet(stakeid, index)}>UNLOCK</button>
+									</td>
+								{/if}
 							</tr>
 						{/each}
 					{/if}

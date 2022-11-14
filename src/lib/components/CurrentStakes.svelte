@@ -26,8 +26,8 @@
 							<tr>
 								<td>{multiplier}</td>
 								<td>{amount}</td>
-								{#if moment(Date.now()).format('MMM Do, YY') !== unlockTime}
-									<td>{unlockTime}</td>
+								{#if Date.now() >= unlockTime}
+									<td>{moment.unix(unlockTime).format('MMM Do, YY')}</td>
 								{:else}
 									<td>
 										<button on:click={() => unstakeTokensOnConnectedWallet(stakeid, index)}>UNLOCK</button>

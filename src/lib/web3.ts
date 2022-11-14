@@ -8,7 +8,6 @@ import stakingabi from '$lib/stakingAbi.json';
 import { defaultEvmStores, signer } from 'svelte-ethers-store';
 import { get } from 'svelte/store';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import moment from 'moment';
 
 import { PUBLIC_INFURA_HTTPS_URL, PUBLIC_INFURA_GOERLI_URL, PUBLIC_STAKING_ADDRESS, PUBLIC_TOAD_CONTRACT_ADDRESS } from '$env/static/public';
 
@@ -127,7 +126,7 @@ export const getStakesForConnectedWallet = async (): Promise<Stake[]> => {
 	const stakes: Stake[] = [];
 
 	for (let i = 0; i < holdersStakes.amounts.length; i++) {
-		const stake: Stake = { amount: formatUnits(holdersStakes.amounts[i], 9), unlockTime: moment.unix(holdersStakes.unlockTimes[i]).format('MMM Do, YY'), multiplier: formatUnits(holdersStakes.stakeMultipliers[i], 5), stakeid: holdersStakes.stakeIds[i], index: i };
+		const stake: Stake = { amount: formatUnits(holdersStakes.amounts[i], 9), unlockTime: holdersStakes.unlockTimes[i], multiplier: formatUnits(holdersStakes.stakeMultipliers[i], 5), stakeid: holdersStakes.stakeIds[i], index: i };
 		stakes.push(stake);
 	}
 
@@ -164,6 +163,8 @@ export const stakeTokensOnConnectedWallet = async (amount: number, weeks: number
 };
 
 export const unstakeTokensOnConnectedWallet = async (stakeId: number, index: number): Promise<void> => {
+	console.log('clicked');
+
 	const sig = get(signer);
 	const stakingContract: ethers.Contract = new ethers.Contract(PUBLIC_STAKING_ADDRESS, stakingabi, sig);
 	// Send the unstake details and wait for a response

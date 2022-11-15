@@ -26,7 +26,7 @@
 							<tr>
 								<td>{multiplier}</td>
 								<td>{amount}</td>
-								{#if Date.now() >= unlockTime}
+								{#if Date.now() <= unlockTime}
 									<td>{moment.unix(unlockTime).format('MMM Do, YY')}</td>
 								{:else}
 									<td>

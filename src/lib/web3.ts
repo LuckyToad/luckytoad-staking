@@ -126,7 +126,7 @@ export const getStakesForConnectedWallet = async (): Promise<Stake[]> => {
 	const stakes: Stake[] = [];
 
 	for (let i = 0; i < holdersStakes.amounts.length; i++) {
-		const stake: Stake = { amount: formatUnits(holdersStakes.amounts[i], 9), unlockTime: holdersStakes.unlockTimes[i], multiplier: formatUnits(holdersStakes.stakeMultipliers[i], 5), stakeid: holdersStakes.stakeIds[i], index: i };
+		const stake: Stake = { amount: Number(formatUnits(holdersStakes.amounts[i], 9)).toFixed(0), unlockTime: holdersStakes.unlockTimes[i], multiplier: formatUnits(holdersStakes.stakeMultipliers[i], 5), stakeid: holdersStakes.stakeIds[i], index: i };
 		stakes.push(stake);
 	}
 

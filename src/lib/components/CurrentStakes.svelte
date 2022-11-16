@@ -4,6 +4,7 @@
 	import { stakes } from '$lib/stores/currentStakes';
 	import moment from 'moment';
 	import { unstakeTokensOnConnectedWallet } from '$lib/web3';
+	import { ethers } from 'ethers';
 </script>
 
 <Menu class={'relative'}>
@@ -25,8 +26,8 @@
 						{#each $stakes as { amount, multiplier, unlockTime, stakeid, index }}
 							<tr>
 								<td>{multiplier}</td>
-								<td>{amount}</td>
-								{#if Date.now() <= unlockTime}
+								<td>{ethers.utils.commify(amount)}</td>
+								{#if Math.floor(Date.now() / 1000) <= unlockTime}
 									<td>{moment.unix(unlockTime).format('MMM Do, YY')}</td>
 								{:else}
 									<td>

@@ -3,6 +3,7 @@
 	import { connected, contracts } from 'svelte-ethers-store';
 	import { amount } from '$lib/stores/stakeAmount';
 	import { error } from '$lib/stores/error';
+	import { ethers } from 'ethers';
 
 	const isAmountValid = (): boolean => {
 		$error = false;
@@ -28,11 +29,11 @@
 	{#if $contracts.TOAD && $balance}
 		<button
 			on:click={() => {
-				$amount = $balance - 0.000001;
+				$amount = $balance;
 				isAmountValid();
 			}}
 			class="text-brand-green-dark text-sm text-center">
-			max: {$balance}
+			max: {ethers.utils.commify($balance)}
 		</button>
 	{/if}
 

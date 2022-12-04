@@ -14,7 +14,7 @@
 	</MenuButton>
 
 	<Transition enter="transition duration-100 ease-out" enterFrom="transform scale-95 opacity-0" enterTo="transform scale-100 opacity-100" leave="transition duration-75 ease-out" leaveFrom="transform scale-100 opacity-100" leaveTo="transform scale-95 opacity-0">
-		<MenuItems class={'absolute right-0 flex flex-col w-max mt-2 origin-top-right divide-y divide-gray-100 rounded-md shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none bg-brand-lemon-light '}>
+		<MenuItems class={'absolute z-50 right-0 flex flex-col w-max mt-2 origin-top-right divide-y divide-gray-100 rounded-md shadow-sm ring-1 ring-black ring-opacity-5 focus:outline-none bg-brand-lemon-light '}>
 			<MenuItem>
 				<table>
 					<thead>

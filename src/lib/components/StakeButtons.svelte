@@ -44,6 +44,8 @@
 </script>
 
 <div class="flex gap-4 justify-center">
-	<button on:click={handleApprove} disabled={!approveUnlocked} class="btn disabled:bg-brand-lemon-dark disabled:text-gray-400 disabled:cursor-not-allowed">Approve Lock</button>
-	<button on:click={handleStake} disabled={!lockUnlocked} class="btn disabled:bg-brand-lemon-dark disabled:text-gray-400 disabled:cursor-not-allowed">Lock Tokens</button>
+	<button on:click={handleApprove} disabled class="btn disabled:bg-brand-lemon-dark disabled:text-gray-400 disabled:cursor-not-allowed">Approve Lock</button>
+	<button on:click={handleStake} disabled class="btn disabled:bg-brand-lemon-dark disabled:text-gray-400 disabled:cursor-not-allowed">Lock Tokens</button>
+	<!-- <button on:click={handleApprove} disabled={!approveUnlocked} class="btn disabled:bg-brand-lemon-dark disabled:text-gray-400 disabled:cursor-not-allowed">Approve Lock</button>
+	<button on:click={handleStake} disabled={!lockUnlocked} class="btn disabled:bg-brand-lemon-dark disabled:text-gray-400 disabled:cursor-not-allowed">Lock Tokens</button> -->
 </div>
